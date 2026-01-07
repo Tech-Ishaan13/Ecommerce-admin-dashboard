@@ -16,7 +16,7 @@ const SECURITY_HEADERS = {
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next.js requires unsafe-inline/eval
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https://res.cloudinary.com",
+    "img-src 'self' data: blob: https://res.cloudinary.com",
     "font-src 'self'",
     "connect-src 'self'",
     "frame-ancestors 'none'",

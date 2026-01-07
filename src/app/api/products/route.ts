@@ -108,5 +108,6 @@ export const GET = withApiMiddleware(handleGetProducts, {
 export const POST = withApiMiddleware(handleCreateProduct, {
   rateLimit: 'api',
   requireAuth: true,
-  validation: productValidationSchemas.create,
+  // Remove validation middleware to avoid body reading conflict
+  // validation: productValidationSchemas.create,
 })
