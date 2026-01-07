@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npx prisma generate && npm run build:next",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "DATABASE_URL": "file:./prisma/dev.db",
+    "NEXTAUTH_SECRET": "vercel-production-secret-key-2024",
+    "NEXTAUTH_URL": "https://ecommerce-admin-dashboard-ishaans-projects-d3f2caa9.vercel.app"
+  }
+}
