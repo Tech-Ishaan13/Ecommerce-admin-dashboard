@@ -167,4 +167,6 @@ async function handleCreateProduct(request: NextRequest) {
 export const POST = withApiMiddleware(handleCreateProduct, {
   rateLimit: 'upload',
   requireAuth: true,
+  // Don't use validation middleware for multipart form data
+  // validation: productValidationSchemas.create,
 })
