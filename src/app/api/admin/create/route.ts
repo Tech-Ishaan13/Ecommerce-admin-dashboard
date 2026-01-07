@@ -1,30 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { withRole } from '@/lib/auth-middleware'
-import { createAdminAction } from '@/app/actions/auth'
+import { NextRequest } from 'next/server'
+import { requireAuth } from '@/lib/api-middleware'
+import { 
+  withApiMiddleware, 
+  createSuccessResponse, 
+  ApiError 
+} from '@/lib/api-middleware'
+import { authService } from '@/services/auth'
 
-export async function POST(request: NextRequest) {
-  return withRole(request, 'super_admin', async (req, user) => {
-    try {
-      const formData = await request.formData()
-      const result = await createAdminAction(formData)
-      
-      if (result.success) {
-        return NextResponse.json({
-          success: true,
-          admin: result.admin
-        })
-      } else {
-        return NextResponse.json(
-          { success: false, error: result.error },
-          { status: 400 }
-        )
-      }
-    } catch (error) {
-      console.error('Create admin API error:', error)
-      return NextResponse.json(
-        { success: false, error: 'Internal server error' },
-        { status: 500 }
-      )
+export const dynamic = 'force-dynamic'
+
+async function handleCreateAdmin(request: NextRequest) {
+  try {
+    // Verify authentication and require super admin
+    const user = await requireAuth(request)
+    
+    if (user.role !== 'super_admin') {
+      throw new ApiError('FORBIDDEN', 'Super admin access required', 403)
     }
-  })
+    
+    const formData = await request.formData()
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    const name = formData.get('name') as string
+    const role = formData.get('role') as 'admin' | 'super_admin'
+
+    if (!email || !password || !name) {
+      throw new ApiError('VALIDATION_ERROR', 'All fields are required', 400)
+    }
+
+    // Validate password strength
+    const passwordValidation = authService.validatePassword(password)
+    if (!passwordValidation.isValid) {
+      throw new ApiError('VALIDATION_ERROR', passwordValidation.errors.join(', '), 400)
+    }
+
+    const adminData = {
+      email,
+      password,
+      name,
+      role: role || 'admin'
+    }
+
+    const newAdmin = await authService.createAdmin(adminData, user)
+    
+    return createSuccessResponse(newAdmin)
+    
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error
+    }
+    
+    throw new ApiError('INTERNAL_ERROR', 'Failed to create admin user', 500)
+  }
 }
+
+export const POST = withApiMiddleware(handleCreateAdmin, {
+  rateLimit: 'strict',
+  requireAuth: true,
+})
