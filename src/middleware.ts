@@ -82,7 +82,8 @@ function isProtectedRoute(pathname: string): boolean {
          (pathname.startsWith('/api/') && 
           !isAuthRoute(pathname) && 
           !pathname.startsWith('/api/test') &&
-          !pathname.startsWith('/api/init-db'))
+          !pathname.startsWith('/api/init-db') &&
+          !pathname.startsWith('/api/debug'))
 }
 
 async function verifyAuthentication(request: NextRequest): Promise<boolean> {
