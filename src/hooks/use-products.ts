@@ -240,7 +240,7 @@ export function useProducts(filters: ProductFilters = {}) {
   return useQuery({
     queryKey: productKeys.list(filters),
     queryFn: () => api.getProducts(filters),
-    staleTime: 2 * 60 * 1000, // 2 minutes for product lists
+    staleTime: 10 * 1000, // 10 seconds for more frequent updates
   })
 }
 
@@ -266,7 +266,7 @@ export function useProductStats() {
   return useQuery({
     queryKey: productKeys.stats(),
     queryFn: api.getProductStats,
-    staleTime: 30 * 1000, // 30 seconds for stats (more real-time)
+    staleTime: 5 * 1000, // 5 seconds for stats (more real-time)
   })
 }
 

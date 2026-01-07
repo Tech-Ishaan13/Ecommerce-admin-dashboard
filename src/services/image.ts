@@ -16,11 +16,27 @@ export class ImageService {
   // Upload image with validation and optimization
   async uploadImage(file: File, metadata: ImageMetadata): Promise<UploadResult> {
     try {
+      // Check if Cloudinary is configured
+      if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+        console.error('Cloudinary configuration missing:', {
+          CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
+          CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
+          CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
+        })
+        throw new Error('Cloudinary is not properly configured. Please check environment variables.')
+      }
+
       // Validate file
       this.validateFile(file, metadata)
 
       // Convert File to buffer for upload
       const buffer = await this.fileToBuffer(file)
+
+      console.log('Uploading image to Cloudinary:', {
+        filename: metadata.filename,
+        size: metadata.size,
+        mimeType: metadata.mimeType
+      })
 
       // Upload to Cloudinary
       const uploadResult = await new Promise<any>((resolve, reject) => {
@@ -43,8 +59,18 @@ export class ImageService {
             eager_async: false, // Generate transformations immediately
           },
           (error, result) => {
-            if (error) reject(error)
-            else resolve(result)
+            if (error) {
+              console.error('Cloudinary upload error:', error)
+              reject(error)
+            } else {
+              console.log('Cloudinary upload success:', {
+                public_id: result.public_id,
+                secure_url: result.secure_url,
+                format: result.format,
+                bytes: result.bytes
+              })
+              resolve(result)
+            }
           }
         ).end(buffer)
       })
@@ -63,6 +89,7 @@ export class ImageService {
         }
       }
 
+      console.log('Image upload completed:', result)
       return result
     } catch (error) {
       console.error('Image upload error:', error)

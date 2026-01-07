@@ -6,6 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Package, TrendingUp, AlertTriangle } from 'lucide-react'
 import { ProductsListingClient } from '@/components/products/products-listing-client'
 
+// Force dynamic rendering to ensure fresh data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function ProductsPage() {
   let productStats
   let categories: string[] = []

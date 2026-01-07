@@ -1,6 +1,10 @@
 import { Suspense } from 'react'
 import { DashboardContent } from '@/components/dashboard/dashboard-content'
 
+// Force dynamic rendering to ensure fresh data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function DashboardPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
