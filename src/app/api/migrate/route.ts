@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       `
       console.log('AdminUser table created')
     } catch (tableError) {
-      console.log('AdminUser table might already exist:', tableError.message)
+      console.log('AdminUser table might already exist:', tableError instanceof Error ? tableError.message : String(tableError))
     }
     
     try {
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       `
       console.log('Product table created')
     } catch (tableError) {
-      console.log('Product table might already exist:', tableError.message)
+      console.log('Product table might already exist:', tableError instanceof Error ? tableError.message : String(tableError))
     }
     
     try {
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       `
       console.log('ProductImage table created')
     } catch (tableError) {
-      console.log('ProductImage table might already exist:', tableError.message)
+      console.log('ProductImage table might already exist:', tableError instanceof Error ? tableError.message : String(tableError))
     }
     
     try {
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
       `
       console.log('SalesData table created')
     } catch (tableError) {
-      console.log('SalesData table might already exist:', tableError.message)
+      console.log('SalesData table might already exist:', tableError instanceof Error ? tableError.message : String(tableError))
     }
     
     console.log('Database migration completed successfully')
