@@ -39,7 +39,7 @@ async function handleGetSalesMetrics(request: NextRequest) {
       })
       
       // Get product names
-      const productIds = topProducts.map(p => p.productId).filter(Boolean)
+      const productIds = topProducts.map(p => p.productId).filter((id): id is string => Boolean(id))
       const products = await prisma.product.findMany({
         where: { id: { in: productIds } },
         select: { id: true, name: true }
