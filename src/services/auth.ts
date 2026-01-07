@@ -73,7 +73,7 @@ export class AuthService {
       console.error('Login error:', error)
       return {
         success: false,
-        error: `An error occurred during login: ${error.message}`
+        error: `An error occurred during login: ${error instanceof Error ? error.message : String(error)}`
       }
     }
   }
