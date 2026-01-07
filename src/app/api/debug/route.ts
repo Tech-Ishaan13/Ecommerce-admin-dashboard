@@ -26,19 +26,19 @@ export async function GET(request: NextRequest) {
       const admin = await databaseService.findAdminByEmail('admin@ecommerce.com')
       if (admin) {
         adminExists = true
+        // Test password verification
+        const testPassword = 'admin123456'
+        const isValidPassword = await bcrypt.compare(testPassword, admin.passwordHash)
+        
         adminData = {
           id: admin.id,
           email: admin.email,
           name: admin.name,
           role: admin.role,
           hasPasswordHash: !!admin.passwordHash,
-          passwordHashLength: admin.passwordHash?.length || 0
+          passwordHashLength: admin.passwordHash?.length || 0,
+          passwordVerificationTest: isValidPassword
         }
-
-        // Test password verification
-        const testPassword = 'admin123456'
-        const isValidPassword = await bcrypt.compare(testPassword, admin.passwordHash)
-        adminData.passwordVerificationTest = isValidPassword
       }
     } catch (dbError) {
       dbStatus = `ERROR: ${dbError.message}`
