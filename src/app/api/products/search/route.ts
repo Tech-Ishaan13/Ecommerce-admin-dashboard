@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { productService } from '@/services/product'
 import { 
   withApiMiddleware, 
@@ -21,7 +21,7 @@ const searchSchema = z.object({
 async function handleProductSearch(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const { searchParams } = new URL(request.url)
     

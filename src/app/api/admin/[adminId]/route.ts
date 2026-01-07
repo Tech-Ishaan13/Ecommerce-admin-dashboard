@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { prisma } from '@/lib/db'
 import { 
   withApiMiddleware, 

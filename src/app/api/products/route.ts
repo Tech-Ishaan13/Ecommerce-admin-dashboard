@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { productService } from '@/services/product'
 import { ProductFilters } from '@/types'
 import { 
@@ -14,7 +14,7 @@ import { z } from 'zod'
 async function handleGetProducts(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const { searchParams } = new URL(request.url)
     
@@ -62,7 +62,7 @@ async function handleGetProducts(request: NextRequest) {
 async function handleCreateProduct(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const body = await request.json()
     

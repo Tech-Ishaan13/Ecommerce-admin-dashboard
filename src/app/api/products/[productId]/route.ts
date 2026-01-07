@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { productService } from '@/services/product'
 import { 
   withApiMiddleware, 
@@ -15,7 +15,7 @@ async function handleGetProduct(
 ) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     if (!params.productId) {
       throw new ApiError('INVALID_PRODUCT_ID', 'Product ID is required', 400)
@@ -48,7 +48,7 @@ async function handleUpdateProduct(
 ) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     if (!params.productId) {
       throw new ApiError('INVALID_PRODUCT_ID', 'Product ID is required', 400)
@@ -100,7 +100,7 @@ async function handleDeleteProduct(
 ) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     if (!params.productId) {
       throw new ApiError('INVALID_PRODUCT_ID', 'Product ID is required', 400)

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { productService } from '@/services/product'
 import { 
   withApiMiddleware, 
@@ -10,7 +10,7 @@ import {
 async function handleProductStats(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const stats = await productService.getProductStats()
     

@@ -1,13 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { metricsService } from '@/services/metrics'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 
 export const dynamic = 'force-dynamic'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    await requireAuth()
+    await requireAuth(request)
     
     // Generate sample sales data for existing products
     await metricsService.createSampleSalesData()

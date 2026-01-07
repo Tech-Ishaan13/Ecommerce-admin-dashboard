@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { productService } from '@/services/product'
 
 export async function POST(
@@ -8,7 +8,7 @@ export async function POST(
 ) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     // Get the original product
     const originalProduct = await productService.getProduct(params.productId)

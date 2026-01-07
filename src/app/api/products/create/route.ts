@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ProductService } from '@/services/product'
 import { ImageService } from '@/services/image'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { 
   withApiMiddleware, 
   createSuccessResponse, 
@@ -29,7 +29,7 @@ const createProductFormSchema = z.object({
 async function handleCreateProduct(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const contentType = request.headers.get('content-type')
     if (!contentType?.includes('multipart/form-data')) {

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from '@/lib/api-middleware'
 import { productService } from '@/services/product'
 import { 
   withApiMiddleware, 
@@ -29,7 +29,7 @@ const batchStatusUpdateSchema = z.object({
 async function handleBatchUpdate(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const body = await request.json()
     
@@ -75,7 +75,7 @@ async function handleBatchUpdate(request: NextRequest) {
 async function handleBatchDelete(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const body = await request.json()
     
@@ -133,7 +133,7 @@ async function handleBatchDelete(request: NextRequest) {
 async function handleBatchStatusUpdate(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await requireAuth()
+    const user = await requireAuth(request)
     
     const body = await request.json()
     
