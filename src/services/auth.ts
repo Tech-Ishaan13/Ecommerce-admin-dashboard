@@ -129,8 +129,8 @@ export class AuthService {
     }
   }
 
-  // Create new admin (only for existing admins)
-  async createAdmin(adminData: CreateAdminRequest, currentAdmin: AdminUser): Promise<AdminUser> {
+  // Create new admin (only for existing admins, or first admin)
+  async createAdmin(adminData: CreateAdminRequest, currentAdmin: AdminUser | { role: string }): Promise<AdminUser> {
     // Only super_admin can create other admins
     if (currentAdmin.role !== 'super_admin') {
       throw new Error('Insufficient permissions to create admin accounts')
