@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
         }
       }
     } catch (dbError) {
-      dbStatus = `ERROR: ${dbError.message}`
+      dbStatus = `ERROR: ${dbError instanceof Error ? dbError.message : String(dbError)}`
     }
 
     return NextResponse.json({
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString()
       },
       { status: 500 }
