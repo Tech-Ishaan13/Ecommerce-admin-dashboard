@@ -139,13 +139,15 @@ export const GET = withApiMiddleware(handleGetProduct, {
 export const PATCH = withApiMiddleware(handleUpdateProduct, {
   rateLimit: 'api',
   requireAuth: true,
-  validation: productValidationSchemas.update,
+  // Remove validation middleware to avoid body reading conflict
+  // validation: productValidationSchemas.update,
 })
 
 export const PUT = withApiMiddleware(handleUpdateProduct, {
   rateLimit: 'api',
   requireAuth: true,
-  validation: productValidationSchemas.update,
+  // Remove validation middleware to avoid body reading conflict
+  // validation: productValidationSchemas.update,
 })
 
 export const DELETE = withApiMiddleware(handleDeleteProduct, {
