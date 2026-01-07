@@ -11,8 +11,8 @@ export const dynamic = 'force-dynamic'
 
 async function handleGetStockMetrics(request: NextRequest) {
   try {
-    // Verify authentication
-    const user = await requireAuth(request)
+    // Temporarily disable authentication
+    // const user = await requireAuth(request)
     
     const stockMetrics = await metricsService.getStockMetrics()
 
@@ -29,5 +29,5 @@ async function handleGetStockMetrics(request: NextRequest) {
 
 export const GET = withApiMiddleware(handleGetStockMetrics, {
   rateLimit: 'api',
-  requireAuth: true,
+  requireAuth: false, // Temporarily disable auth
 })

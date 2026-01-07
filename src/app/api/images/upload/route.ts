@@ -4,14 +4,14 @@ import { verifyAuth } from '@/lib/auth-middleware'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const authResult = await verifyAuth(request)
-    if (!authResult.success) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    // Temporarily disable authentication
+    // const authResult = await verifyAuth(request)
+    // if (!authResult.success) {
+    //   return NextResponse.json(
+    //     { success: false, error: 'Authentication required' },
+    //     { status: 401 }
+    //   )
+    // }
 
     // Parse form data
     const formData = await request.formData()
@@ -59,14 +59,14 @@ export async function POST(request: NextRequest) {
 // Get upload signature for client-side uploads
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const authResult = await verifyAuth(request)
-    if (!authResult.success) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    // Temporarily disable authentication
+    // const authResult = await verifyAuth(request)
+    // if (!authResult.success) {
+    //   return NextResponse.json(
+    //     { success: false, error: 'Authentication required' },
+    //     { status: 401 }
+    //   )
+    // }
 
     const { searchParams } = new URL(request.url)
     const folder = searchParams.get('folder') || 'ecommerce-products'

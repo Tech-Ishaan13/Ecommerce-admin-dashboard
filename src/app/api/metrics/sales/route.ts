@@ -12,8 +12,8 @@ export const dynamic = 'force-dynamic'
 
 async function handleGetSalesMetrics(request: NextRequest) {
   try {
-    // Verify authentication
-    const user = await requireAuth(request)
+    // Temporarily disable authentication
+    // const user = await requireAuth(request)
     
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('startDate')
@@ -42,5 +42,5 @@ async function handleGetSalesMetrics(request: NextRequest) {
 
 export const GET = withApiMiddleware(handleGetSalesMetrics, {
   rateLimit: 'api',
-  requireAuth: true,
+  requireAuth: false, // Temporarily disable auth
 })

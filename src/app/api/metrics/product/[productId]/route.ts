@@ -48,5 +48,5 @@ async function handleGetProductMetrics(
 
 export const GET = withApiMiddleware(handleGetProductMetrics, {
   rateLimit: 'api',
-  requireAuth: true,
+  requireAuth: false, // Temporarily disable auth
 })
