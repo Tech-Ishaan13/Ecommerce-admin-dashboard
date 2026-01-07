@@ -11,64 +11,68 @@ export const dynamic = 'force-dynamic'
 
 async function handleGetStockMetrics(request: NextRequest) {
   try {
-    // Emergency fallback - return mock data if database fails
+    // Direct database connection - bypass service layer
+    const { PrismaClient } = await import('@prisma/client')
+    const prisma = new PrismaClient()
+    
     try {
-      const stockMetrics = await metricsService.getStockMetrics()
-      return createSuccessResponse(stockMetrics)
-    } catch (dbError) {
-      console.log('Database failed, using mock stock data')
+      // Get total products count
+      const totalProducts = await prisma.product.count()
       
-      // Return realistic mock stock data
-      const mockStockMetrics = {
-        totalProducts: 156,
-        lowStockProducts: [
-          {
-            id: '1',
-            name: 'Wireless Mouse',
-            stock: 3,
-            lowStockThreshold: 10,
-            category: 'Electronics',
-            price: 29.99,
-            status: 'active',
-            images: [],
-            description: 'High-precision wireless mouse',
-            specifications: {},
-            tags: [],
-            createdAt: new Date(),
-            updatedAt: new Date()
-          },
-          {
-            id: '2', 
-            name: 'USB Cable',
-            stock: 5,
-            lowStockThreshold: 15,
-            category: 'Accessories',
-            price: 12.99,
-            status: 'active',
-            images: [],
-            description: 'Premium USB-C cable',
-            specifications: {},
-            tags: [],
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }
-        ],
-        stockByCategory: [
-          { category: 'Electronics', totalStock: 450, productCount: 45 },
-          { category: 'Accessories', totalStock: 320, productCount: 67 },
-          { category: 'Home & Garden', totalStock: 180, productCount: 23 },
-          { category: 'Sports', totalStock: 95, productCount: 21 }
-        ]
+      // Get low stock products (stock < 10)
+      const lowStockProducts = await prisma.product.findMany({
+        where: {
+          stock: { lt: 10 }
+        },
+        select: {
+          id: true,
+          name: true,
+          stock: true,
+          category: true,
+          price: true,
+          status: true,
+          images: true,
+          description: true,
+          specifications: true,
+          tags: true,
+          createdAt: true,
+          updatedAt: true
+        },
+        orderBy: { stock: 'asc' },
+        take: 10
+      })
+      
+      // Get stock by category
+      const stockByCategory = await prisma.product.groupBy({
+        by: ['category'],
+        _sum: { stock: true },
+        _count: { id: true },
+        orderBy: { _sum: { stock: 'desc' } }
+      })
+      
+      const stockMetrics = {
+        totalProducts,
+        lowStockProducts: lowStockProducts.map(product => ({
+          ...product,
+          lowStockThreshold: 10 // Default threshold
+        })),
+        stockByCategory: stockByCategory.map(category => ({
+          category: category.category,
+          totalStock: category._sum.stock || 0,
+          productCount: category._count.id
+        }))
       }
       
-      return createSuccessResponse(mockStockMetrics)
+      await prisma.$disconnect()
+      return createSuccessResponse(stockMetrics)
+      
+    } catch (dbError) {
+      await prisma.$disconnect()
+      throw dbError
     }
     
   } catch (error) {
-    if (error instanceof ApiError) {
-      throw error
-    }
-    
+    console.error('Stock metrics error:', error)
     throw new ApiError('INTERNAL_ERROR', 'Failed to fetch stock metrics', 500)
   }
 }

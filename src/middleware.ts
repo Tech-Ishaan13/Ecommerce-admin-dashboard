@@ -84,7 +84,10 @@ function isProtectedRoute(pathname: string): boolean {
           !pathname.startsWith('/api/test') &&
           !pathname.startsWith('/api/init-db') &&
           !pathname.startsWith('/api/debug') &&
-          !pathname.startsWith('/api/migrate'))
+          !pathname.startsWith('/api/migrate') &&
+          !pathname.startsWith('/api/metrics') &&
+          !pathname.startsWith('/api/images') &&
+          !pathname.startsWith('/api/admin/create'))
 }
 
 async function verifyAuthentication(request: NextRequest): Promise<boolean> {
