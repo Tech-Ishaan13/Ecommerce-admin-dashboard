@@ -95,7 +95,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Database initialization error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to initialize database' },
+      { 
+        success: false, 
+        error: `Failed to initialize database: ${error instanceof Error ? error.message : String(error)}`
+      },
       { status: 500 }
     )
   } finally {
