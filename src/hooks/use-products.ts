@@ -297,6 +297,9 @@ export function useCreateProduct() {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
       queryClient.invalidateQueries({ queryKey: productKeys.stats() })
       
+      // Invalidate dashboard metrics to refresh charts and stats
+      queryClient.invalidateQueries({ queryKey: ['metrics'] })
+      
       // Add the new product to the cache
       queryClient.setQueryData(productKeys.detail(newProduct.id), newProduct)
     },
@@ -339,6 +342,9 @@ export function useUpdateProduct() {
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
       queryClient.invalidateQueries({ queryKey: productKeys.stats() })
+      
+      // Invalidate dashboard metrics to refresh charts and stats
+      queryClient.invalidateQueries({ queryKey: ['metrics'] })
     },
   })
 }
@@ -370,6 +376,9 @@ export function useDeleteProduct() {
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
       queryClient.invalidateQueries({ queryKey: productKeys.stats() })
+      
+      // Invalidate dashboard metrics to refresh charts and stats
+      queryClient.invalidateQueries({ queryKey: ['metrics'] })
     },
   })
 }
@@ -382,6 +391,9 @@ export function useBatchUpdateProducts() {
     onSuccess: () => {
       // Invalidate all product-related queries after batch operations
       queryClient.invalidateQueries({ queryKey: productKeys.all })
+      
+      // Invalidate dashboard metrics to refresh charts and stats
+      queryClient.invalidateQueries({ queryKey: ['metrics'] })
     },
   })
 }
@@ -394,6 +406,9 @@ export function useBatchDeleteProducts() {
     onSuccess: () => {
       // Invalidate all product-related queries after batch operations
       queryClient.invalidateQueries({ queryKey: productKeys.all })
+      
+      // Invalidate dashboard metrics to refresh charts and stats
+      queryClient.invalidateQueries({ queryKey: ['metrics'] })
     },
   })
 }

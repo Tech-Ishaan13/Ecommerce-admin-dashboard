@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { metricsService } from '@/services/metrics'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const stockMetrics = await metricsService.getStockMetrics()
