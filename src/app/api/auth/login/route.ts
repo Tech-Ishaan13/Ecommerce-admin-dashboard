@@ -7,6 +7,12 @@ export async function POST(request: NextRequest) {
     const { email, password } = body
     
     console.log('Login attempt for:', email)
+    console.log('Environment check:', {
+      NODE_ENV: process.env.NODE_ENV,
+      DATABASE_URL: process.env.DATABASE_URL ? 'SET' : 'NOT SET',
+      JWT_SECRET: process.env.JWT_SECRET ? 'SET' : 'NOT SET',
+      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? 'SET' : 'NOT SET'
+    })
     
     const result = await authService.login({ email, password })
     console.log('Login result:', { success: result.success, error: result.error })
@@ -29,10 +35,15 @@ export async function POST(request: NextRequest) {
 
       return response
     } else {
+      console.error('Login failed with result:', result)
       return NextResponse.json(
         { 
           success: false, 
-          error: result.error || 'Invalid credentials' 
+          error: {
+            code: 'UNAUTHORIZED',
+            message: result.error || 'Authentication required'
+          },
+          timestamp: new Date().toISOString()
         },
         { status: 401 }
       )
@@ -42,7 +53,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Login failed' 
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Login failed'
+        },
+        timestamp: new Date().toISOString()
       },
       { status: 500 }
     )

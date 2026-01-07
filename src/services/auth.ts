@@ -10,8 +10,24 @@ export class AuthService {
   // Login functionality
   async login(credentials: AdminCredentials): Promise<AuthResult & { token?: string }> {
     try {
+      console.log('AuthService.login called with email:', credentials.email)
+      
+      // Test database connection first
+      try {
+        await databaseService.prisma.$connect()
+        console.log('Database connection successful')
+      } catch (dbError) {
+        console.error('Database connection failed:', dbError)
+        return {
+          success: false,
+          error: 'Database connection failed'
+        }
+      }
+
       // Find admin by email
+      console.log('Looking for admin with email:', credentials.email)
       const admin = await databaseService.findAdminByEmail(credentials.email)
+      console.log('Admin found:', admin ? { id: admin.id, email: admin.email, hasPassword: !!admin.passwordHash } : 'null')
       
       if (!admin) {
         return {
@@ -21,7 +37,9 @@ export class AuthService {
       }
 
       // Verify password
+      console.log('Verifying password...')
       const isValidPassword = await bcrypt.compare(credentials.password, admin.passwordHash)
+      console.log('Password verification result:', isValidPassword)
       
       if (!isValidPassword) {
         return {
@@ -31,6 +49,7 @@ export class AuthService {
       }
 
       // Generate JWT token
+      console.log('Generating JWT token...')
       const token = jwt.sign(
         { 
           adminId: admin.id,
@@ -40,6 +59,7 @@ export class AuthService {
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       )
+      console.log('JWT token generated successfully')
 
       // Return success with user data (without password hash)
       const { passwordHash, ...userWithoutPassword } = admin
@@ -53,7 +73,7 @@ export class AuthService {
       console.error('Login error:', error)
       return {
         success: false,
-        error: 'An error occurred during login'
+        error: `An error occurred during login: ${error.message}`
       }
     }
   }
