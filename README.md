@@ -2,6 +2,8 @@
 
 A comprehensive server-side rendered admin dashboard for managing e-commerce products, built with Next.js 14, TypeScript, and modern web technologies.
 
+Site link:- https://ecommerce-admin-dashboard-3-d2xh4zzy8-ishaans-projects-d3f2caa9.vercel.app/
+
 ## Features
 
 ### Core Functionality
