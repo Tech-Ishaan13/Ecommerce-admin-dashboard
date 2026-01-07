@@ -62,7 +62,7 @@ export class ImageService {
             if (error) {
               console.error('Cloudinary upload error:', error)
               reject(error)
-            } else {
+            } else if (result) {
               console.log('Cloudinary upload success:', {
                 public_id: result.public_id,
                 secure_url: result.secure_url,
@@ -70,6 +70,9 @@ export class ImageService {
                 bytes: result.bytes
               })
               resolve(result)
+            } else {
+              console.error('Cloudinary upload failed: No result returned')
+              reject(new Error('Upload failed: No result returned'))
             }
           }
         ).end(buffer)
