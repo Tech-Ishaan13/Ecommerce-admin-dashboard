@@ -1,11 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { requireAuth } from '@/lib/api-middleware'
+import { 
+  withApiMiddleware, 
+  createSuccessResponse, 
+  ApiError 
+} from '@/lib/api-middleware'
 import { metricsService } from '@/services/metrics'
 import { DateRange } from '@/types'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: NextRequest) {
+async function handleGetSalesMetrics(request: NextRequest) {
   try {
+    // Verify authentication
+    const user = await requireAuth(request)
+    
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
@@ -20,21 +29,18 @@ export async function GET(request: NextRequest) {
 
     const salesMetrics = await metricsService.getSalesMetrics(dateRange)
 
-    return NextResponse.json({
-      success: true,
-      data: salesMetrics,
-    })
+    return createSuccessResponse(salesMetrics)
+    
   } catch (error) {
-    console.error('Sales metrics API error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'SALES_METRICS_ERROR',
-          message: 'Failed to fetch sales metrics',
-        },
-      },
-      { status: 500 }
-    )
+    if (error instanceof ApiError) {
+      throw error
+    }
+    
+    throw new ApiError('INTERNAL_ERROR', 'Failed to fetch sales metrics', 500)
   }
 }
+
+export const GET = withApiMiddleware(handleGetSalesMetrics, {
+  rateLimit: 'api',
+  requireAuth: true,
+})

@@ -1,27 +1,33 @@
-import { NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { requireAuth } from '@/lib/api-middleware'
+import { 
+  withApiMiddleware, 
+  createSuccessResponse, 
+  ApiError 
+} from '@/lib/api-middleware'
 import { metricsService } from '@/services/metrics'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+async function handleGetStockMetrics(request: NextRequest) {
   try {
+    // Verify authentication
+    const user = await requireAuth(request)
+    
     const stockMetrics = await metricsService.getStockMetrics()
 
-    return NextResponse.json({
-      success: true,
-      data: stockMetrics,
-    })
+    return createSuccessResponse(stockMetrics)
+    
   } catch (error) {
-    console.error('Stock metrics API error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'STOCK_METRICS_ERROR',
-          message: 'Failed to fetch stock metrics',
-        },
-      },
-      { status: 500 }
-    )
+    if (error instanceof ApiError) {
+      throw error
+    }
+    
+    throw new ApiError('INTERNAL_ERROR', 'Failed to fetch stock metrics', 500)
   }
 }
+
+export const GET = withApiMiddleware(handleGetStockMetrics, {
+  rateLimit: 'api',
+  requireAuth: true,
+})

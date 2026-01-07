@@ -1,12 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { requireAuth } from '@/lib/api-middleware'
+import { 
+  withApiMiddleware, 
+  createSuccessResponse, 
+  ApiError 
+} from '@/lib/api-middleware'
 import { metricsService } from '@/services/metrics'
 import { DateRange } from '@/types'
 
-export async function GET(
+async function handleGetProductMetrics(
   request: NextRequest,
   { params }: { params: { productId: string } }
 ) {
   try {
+    // Verify authentication
+    const user = await requireAuth(request)
+    
     const { productId } = params
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('startDate')
@@ -22,35 +31,22 @@ export async function GET(
 
     const productPerformance = await metricsService.getProductPerformance(productId, dateRange)
 
-    return NextResponse.json({
-      success: true,
-      data: productPerformance,
-    })
-  } catch (error) {
-    console.error('Product performance API error:', error)
+    return createSuccessResponse(productPerformance)
     
+  } catch (error) {
     if (error instanceof Error && error.message === 'Product not found') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'PRODUCT_NOT_FOUND',
-            message: 'Product not found',
-          },
-        },
-        { status: 404 }
-      )
+      throw new ApiError('PRODUCT_NOT_FOUND', 'Product not found', 404)
     }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'PRODUCT_PERFORMANCE_ERROR',
-          message: 'Failed to fetch product performance metrics',
-        },
-      },
-      { status: 500 }
-    )
+    
+    if (error instanceof ApiError) {
+      throw error
+    }
+    
+    throw new ApiError('INTERNAL_ERROR', 'Failed to fetch product performance metrics', 500)
   }
 }
+
+export const GET = withApiMiddleware(handleGetProductMetrics, {
+  rateLimit: 'api',
+  requireAuth: true,
+})
